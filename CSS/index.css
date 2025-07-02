@@ -67,3 +67,21 @@ h2 {
 .fa {
     margin-right: 6px;
 }
+.navbar {
+    min-height: 70px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.navbar-brand {
+    font-size: 2rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+.navbar-nav .nav-link {
+    font-size: 1.15rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.navbar-text, #cerrarSesion {
+    font-size: 1.1rem;
+}
