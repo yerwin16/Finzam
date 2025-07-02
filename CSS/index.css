@@ -1,87 +1,325 @@
+/* Variables de colores */
+:root {
+    --primary-color: #10b981;
+    --secondary-color: #f59e0b;
+    --accent-color: #3b82f6;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --info-color: #06b6d4;
+    --dark-color: #1f2937;
+    --light-color: #f8fafc;
+    --white-color: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos generales */
 body {
-    background: #f4f7fa;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
 }
-.bg-white {
-    background: #fff !important;
+
+/* Estilos para autenticación */
+.auth-body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
-.shadow {
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+
+.auth-card {
+    background: var(--white-color);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    max-width: 450px;
+    width: 100%;
+    backdrop-filter: blur(10px);
 }
-h2 {
-    color: #223366;
-    font-weight: bold;
-}
-.form-control, .form-select {
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-}
-.btn-success {
-    background: #10b981;
-    border: none;
-    font-weight: 600;
-}
-.btn-success:hover {
-    background: #059669;
-}
-.btn-warning {
-    background: #fde68a;
-    color: #b45309;
-    border: none;
-    font-weight: 600;
-}
-.btn-warning:hover {
-    background: #fbbf24;
-    color: #fff;
-}
-.btn-primary {
-    background: #2563eb;
-    border: none;
-    font-weight: 600;
-}
-.btn-primary:hover {
-    background: #1d4ed8;
-}
-.btn-danger {
-    background: #ef4444;
-    border: none;
-    font-weight: 600;
-}
-.btn-danger:hover {
-    background: #b91c1c;
-}
-.list-group-item {
+
+.logo-container {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 50%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    border: none;
-    border-bottom: 1px solid #f1f1f1;
-    font-size: 1rem;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
 }
+
+.logo-icon {
+    font-size: 2.5rem;
+    color: var(--white-color);
+}
+
+.brand-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.brand-subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.auth-tab {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-tab.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: none;
+}
+
+.auth-form .form-floating {
+    margin-bottom: 1rem;
+}
+
+.auth-form .form-control {
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.auth-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+}
+
+.auth-btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para la aplicación principal */
+.navbar {
+    min-height: 70px;
+    padding: 1rem 0;
+    background: var(--white-color) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark-color) !important;
+}
+
+.brand-text {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.navbar-nav .nav-link {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280 !important;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin: 0 0.25rem;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-color) !important;
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--primary-color) !important;
+    background-color: rgba(16, 185, 129, 0.1);
+    font-weight: 600;
+}
+
+.navbar-text {
+    font-weight: 500;
+    color: var(--dark-color) !important;
+}
+
+/* Contenido principal */
+#main-content {
+    padding-top: 2rem;
+}
+
+/* Tarjetas del dashboard */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+/* Botones */
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color), #059669);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning-color), #d97706);
+    color: var(--white-color);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+}
+
+.btn-outline-danger {
+    border: 2px solid var(--danger-color);
+    color: var(--danger-color);
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: var(--danger-color);
+    color: var(--white-color);
+}
+
+/* Formularios */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+}
+
+/* Lista de transacciones */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
 .list-group-item:last-child {
     border-bottom: none;
 }
-.text-success {
-    font-weight: 600;
-    font-size: 1.1em;
+
+/* Progreso */
+.progress {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #e5e7eb;
 }
-.fa {
-    margin-right: 6px;
+
+.progress-bar {
+    border-radius: 5px;
+    transition: all 0.3s ease;
 }
-.navbar {
-    min-height: 70px;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+
+/* Badges */
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
 }
-.navbar-brand {
-    font-size: 2rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-card {
+        margin: 1rem;
+        padding: 2rem;
+    }
+    
+    .brand-title {
+        font-size: 2rem;
+    }
+    
+    .navbar-nav .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
 }
-.navbar-nav .nav-link {
-    font-size: 1.15rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-.navbar-text, #cerrarSesion {
-    font-size: 1.1rem;
+
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Gráficas */
+canvas {
+    border-radius: 10px;
+}
+
+/* SweetAlert personalizado */
+.swal2-popup {
+    border-radius: 15px;
+}
+
+.swal2-title {
+    color: var(--dark-color);
+}
+
+.swal2-confirm {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+    border-radius: 10px !important;
 }

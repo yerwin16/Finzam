@@ -77,151 +77,204 @@ function renderizarTransacciones() {
     });
 }
 
-// Agregar transacción
-document.getElementById('agregarTransaccion').addEventListener('click', () => {
-    const tipo = document.getElementById('tipoTransaccion').value;
-    const descripcion = document.getElementById('descripcion').value.trim();
-    const monto = parseFloat(document.getElementById('monto').value);
-    
-    if (!descripcion || isNaN(monto) || monto <= 0) {
-        Swal.fire('Error', 'Por favor, ingresa una descripción y un monto válido', 'error');
-        return;
-    }
+// --- Vista de Transacciones ---
+function cargarVistaTransacciones() {
+    document.getElementById('main-content').innerHTML = `
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h4 class="mb-3"><i class="fa fa-exchange-alt text-primary"></i> Transacciones</h4>
+                        <select id="tipoTransaccion" class="form-select mb-2">
+                            <option value="gasto">Gasto</option>
+                            <option value="ingreso">Ingreso</option>
+                        </select>
+                        <input id="descripcion" class="form-control mb-2" placeholder="Descripción de la transacción">
+                        <input id="monto" class="form-control mb-3" placeholder="Monto en pesos" type="number" min="0" step="0.01">
+                        <button id="agregarTransaccion" class="btn btn-success w-100 mb-3"><i class="fa fa-plus"></i> Agregar Transacción</button>
+                        <h5 class="mb-2"><i class="fa fa-clipboard-list"></i> Lista de Transacciones</h5>
+                        <ul id="listaTransacciones" class="list-group mb-3"></ul>
+                        <div class="mb-2"><span class="text-success"><i class="fa fa-money-bill-wave"></i> Balance total: $<span id="balanceTotal">0.00</span></span></div>
+                        <div class="d-flex gap-2 mb-2">
+                            <button id="exportarExcel" class="btn btn-primary w-100"><i class="fa fa-file-excel"></i> Exportar Excel</button>
+                            <button id="exportarPDF" class="btn btn-primary w-100"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
+                            <button id="borrarTodo" class="btn btn-danger w-100"><i class="fa fa-trash"></i> Borrar Todo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    cargarTransacciones();
+    agregarListenersTransacciones();
+}
 
-    const transaccionData = {
-        descripcion: descripcion,
-        monto: monto,
-        tipo: tipo,
-        fecha_transaccion: new Date().toISOString().split('T')[0],
-        categoria_id: null,
-        cuenta_id: null,
-        usuario_id: usuario.id,
-        notas: ''
-    };
-
-    fetch('PHP/transacciones.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transaccionData)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('descripcion').value = '';
-            document.getElementById('monto').value = '';
-            cargarTransacciones();
-            Swal.fire('¡Transacción agregada!', '', 'success');
-        } else {
-            Swal.fire('Error', 'No se pudo agregar la transacción', 'error');
+function agregarListenersTransacciones() {
+    document.getElementById('agregarTransaccion').addEventListener('click', () => {
+        const tipo = document.getElementById('tipoTransaccion').value;
+        const descripcion = document.getElementById('descripcion').value.trim();
+        const monto = parseFloat(document.getElementById('monto').value);
+        if (!descripcion || isNaN(monto) || monto <= 0) {
+            Swal.fire('Error', 'Por favor, ingresa una descripción y un monto válido', 'error');
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire('Error', 'Error de conexión', 'error');
+        const transaccionData = {
+            descripcion: descripcion,
+            monto: monto,
+            tipo: tipo,
+            fecha_transaccion: new Date().toISOString().split('T')[0],
+            categoria_id: null,
+            cuenta_id: null,
+            usuario_id: usuario.id,
+            notas: ''
+        };
+        fetch('PHP/transacciones.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transaccionData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('descripcion').value = '';
+                document.getElementById('monto').value = '';
+                cargarTransacciones();
+                Swal.fire('¡Transacción agregada!', '', 'success');
+            } else {
+                Swal.fire('Error', 'No se pudo agregar la transacción', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Error de conexión', 'error');
+        });
     });
-});
-
-// Guardar presupuesto
-document.getElementById('guardarPresupuesto').addEventListener('click', () => {
-    const valor = parseFloat(document.getElementById('presupuesto').value);
-    if (isNaN(valor) || valor <= 0) {
-        Swal.fire('Error', 'Ingresa un presupuesto válido', 'error');
-        return;
-    }
-
-    const presupuestoData = {
-        mes: new Date().getMonth() + 1,
-        año: new Date().getFullYear(),
-        monto_total: valor,
-        usuario_id: usuario.id
-    };
-
-    fetch('PHP/presupuestos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(presupuestoData)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            presupuesto = valor;
-            Swal.fire('¡Presupuesto guardado!', '', 'success');
-        } else {
-            Swal.fire('Error', 'No se pudo guardar el presupuesto', 'error');
+    document.getElementById('borrarTodo').addEventListener('click', () => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¡Esto eliminará todas las transacciones!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, borrar todo',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Aquí se podría implementar la eliminación masiva desde la base de datos
+                Swal.fire('¡Datos borrados!', '', 'success');
+                cargarTransacciones();
+            }
+        });
+    });
+    document.getElementById('exportarExcel').addEventListener('click', () => {
+        if (transacciones.length === 0) {
+            Swal.fire('No hay datos', 'Agrega transacciones para exportar.', 'info');
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire('Error', 'Error de conexión', 'error');
+        const ws_data = [['Tipo', 'Descripción', 'Monto', 'Fecha']].concat(
+            transacciones.map(t => [t.tipo, t.descripcion, t.monto, t.fecha_transaccion])
+        );
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws, 'Transacciones');
+        XLSX.writeFile(wb, 'finanzas.xlsx');
     });
-});
-
-// Borrar todo
-document.getElementById('borrarTodo').addEventListener('click', () => {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: '¡Esto eliminará todas las transacciones y el presupuesto!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, borrar todo',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Aquí se podría implementar la eliminación masiva desde la base de datos
-            Swal.fire('¡Datos borrados!', '', 'success');
-            cargarDatos();
+    document.getElementById('exportarPDF').addEventListener('click', () => {
+        if (transacciones.length === 0) {
+            Swal.fire('No hay datos', 'Agrega transacciones para exportar.', 'info');
+            return;
         }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text('Transacciones', 10, 10);
+        let y = 20;
+        transacciones.forEach((t, i) => {
+            doc.text(`${i+1}. ${t.tipo}: ${t.descripcion} - $${parseFloat(t.monto).toFixed(2)}`, 10, y);
+            y += 10;
+        });
+        doc.save('finanzas.pdf');
     });
-});
+}
 
-// Exportar Excel
-document.getElementById('exportarExcel').addEventListener('click', () => {
-    if (transacciones.length === 0) {
-        Swal.fire('No hay datos', 'Agrega transacciones para exportar.', 'info');
-        return;
-    }
-    const ws_data = [['Tipo', 'Descripción', 'Monto', 'Fecha']].concat(
-        transacciones.map(t => [t.tipo, t.descripcion, t.monto, t.fecha_transaccion])
-    );
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(ws_data);
-    XLSX.utils.book_append_sheet(wb, ws, 'Transacciones');
-    XLSX.writeFile(wb, 'finanzas.xlsx');
-});
+// --- Vista de Presupuesto ---
+function cargarVistaPresupuesto() {
+    document.getElementById('main-content').innerHTML = `
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h4 class="mb-3"><i class="fa fa-bullseye text-warning"></i> Presupuesto mensual</h4>
+                        <input id="presupuesto" class="form-control mb-2" placeholder="Ingresa tu presupuesto mensual" type="number" min="0" step="0.01">
+                        <button id="guardarPresupuesto" class="btn btn-warning w-100 mb-3"><i class="fa fa-save"></i> Guardar Presupuesto</button>
+                        <div class="progress mb-2">
+                            <div id="barra-presupuesto" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
+                        </div>
+                        <div><span id="presupuesto-actual">$0.00</span> de presupuesto</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    cargarPresupuestoVista();
+    agregarListenerPresupuesto();
+}
 
-// Exportar PDF
-document.getElementById('exportarPDF').addEventListener('click', () => {
-    if (transacciones.length === 0) {
-        Swal.fire('No hay datos', 'Agrega transacciones para exportar.', 'info');
-        return;
-    }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text('Transacciones', 10, 10);
-    let y = 20;
-    transacciones.forEach((t, i) => {
-        doc.text(`${i+1}. ${t.tipo}: ${t.descripcion} - $${parseFloat(t.monto).toFixed(2)}`, 10, y);
-        y += 10;
-    });
-    doc.save('finanzas.pdf');
-});
+function cargarPresupuestoVista() {
+    const mes = new Date().getMonth() + 1;
+    const año = new Date().getFullYear();
+    fetch(`PHP/presupuestos.php?usuario_id=${usuario.id}&mes=${mes}&año=${año}`)
+        .then(res => res.json())
+        .then(data => {
+            let monto = 0;
+            if (data && data.monto_total) monto = parseFloat(data.monto_total);
+            document.getElementById('presupuesto').value = monto;
+            document.getElementById('presupuesto-actual').textContent = `$${monto.toFixed(2)}`;
+            // Barra de progreso
+            fetch(`PHP/transacciones.php?usuario_id=${usuario.id}`)
+                .then(res => res.json())
+                .then(transacciones => {
+                    let gastado = 0;
+                    transacciones.forEach(t => { if (t.tipo === 'gasto') gastado += parseFloat(t.monto); });
+                    let porcentaje = monto > 0 ? Math.min(100, (gastado / monto) * 100) : 0;
+                    document.getElementById('barra-presupuesto').style.width = porcentaje + '%';
+                    document.getElementById('barra-presupuesto').textContent = porcentaje.toFixed(0) + '%';
+                    document.getElementById('barra-presupuesto').className = 'progress-bar ' + (porcentaje > 90 ? 'bg-danger' : 'bg-success');
+                });
+        });
+}
 
-// Cerrar sesión
-document.getElementById('cerrarSesion').addEventListener('click', () => {
-    Swal.fire({
-        title: '¿Cerrar sesión?',
-        text: '¿Estás seguro de que quieres cerrar sesión?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, cerrar sesión',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            localStorage.removeItem('usuario');
-            window.location.href = 'index.html';
+function agregarListenerPresupuesto() {
+    document.getElementById('guardarPresupuesto').addEventListener('click', () => {
+        const valor = parseFloat(document.getElementById('presupuesto').value);
+        if (isNaN(valor) || valor <= 0) {
+            Swal.fire('Error', 'Ingresa un presupuesto válido', 'error');
+            return;
         }
+        const presupuestoData = {
+            mes: new Date().getMonth() + 1,
+            año: new Date().getFullYear(),
+            monto_total: valor,
+            usuario_id: usuario.id
+        };
+        fetch('PHP/presupuestos.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(presupuestoData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('¡Presupuesto guardado!', '', 'success');
+                cargarPresupuestoVista();
+            } else {
+                Swal.fire('Error', 'No se pudo guardar el presupuesto', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Error de conexión', 'error');
+        });
     });
-});
+}
 
 // --- Navegación dinámica ---
 function cargarVistaDashboard() {
@@ -376,7 +429,8 @@ document.addEventListener('DOMContentLoaded', function() {
     activarNav('nav-dashboard');
     // Navegación
     document.getElementById('nav-dashboard').onclick = function() { cargarVistaDashboard(); activarNav('nav-dashboard'); };
-    // (Las demás secciones se implementarán después)
+    document.getElementById('nav-transacciones').onclick = function() { cargarVistaTransacciones(); activarNav('nav-transacciones'); };
+    document.getElementById('nav-presupuesto').onclick = function() { cargarVistaPresupuesto(); activarNav('nav-presupuesto'); };
     // Cerrar sesión
     document.getElementById('cerrarSesion').onclick = function() {
         Swal.fire({
