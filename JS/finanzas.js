@@ -2,6 +2,8 @@
 let usuario = null;
 let transacciones = [];
 let presupuesto = 0;
+let chartDistribucion = null;
+let chartEvolucion = null;
 
 // Verificar si el usuario está autenticado
 function verificarAutenticacion() {
@@ -240,8 +242,8 @@ function cargarVistaDashboard() {
             <div class="col-12 col-md-6">
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fa fa-chart-pie text-info"></i> Distribución</h5>
-                        <canvas id="chartDashboard" height="120"></canvas>
+                        <h5 class="card-title"><i class="fa fa-chart-pie text-info"></i> Distribución de gastos</h5>
+                        <canvas id="chartDistribucion" height="120"></canvas>
                     </div>
                 </div>
             </div>
@@ -261,8 +263,8 @@ function cargarVistaDashboard() {
             <div class="col-12 col-md-6">
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
-                        <h6 class="card-title"><i class="fa fa-flag-checkered text-secondary"></i> Objetivos</h6>
-                        <div id="dashboard-objetivos">(Próximamente)</div>
+                        <h6 class="card-title"><i class="fa fa-chart-line text-primary"></i> Evolución mensual</h6>
+                        <canvas id="chartEvolucion" height="120"></canvas>
                     </div>
                 </div>
             </div>
@@ -279,22 +281,30 @@ function cargarDatosDashboard() {
             transacciones = data;
             let ingresos = 0, gastos = 0;
             let categorias = {};
+            let meses = {};
             transacciones.forEach(t => {
                 if (t.tipo === 'ingreso') ingresos += parseFloat(t.monto);
                 else gastos += parseFloat(t.monto);
-                // Para gráfica de categorías
-                if (t.categoria_nombre) {
+                // Para gráfica de categorías (solo gastos)
+                if (t.tipo === 'gasto' && t.categoria_nombre) {
                     if (!categorias[t.categoria_nombre]) categorias[t.categoria_nombre] = 0;
                     categorias[t.categoria_nombre] += parseFloat(t.monto);
                 }
+                // Para gráfica de evolución mensual
+                const fecha = new Date(t.fecha_transaccion);
+                const key = fecha.getFullYear() + '-' + String(fecha.getMonth() + 1).padStart(2, '0');
+                if (!meses[key]) meses[key] = { ingresos: 0, gastos: 0 };
+                if (t.tipo === 'ingreso') meses[key].ingresos += parseFloat(t.monto);
+                else meses[key].gastos += parseFloat(t.monto);
             });
             const balance = ingresos - gastos;
             document.getElementById('dashboard-balance').textContent = balance.toFixed(2);
             document.getElementById('dashboard-ingresos').textContent = ingresos.toFixed(2);
             document.getElementById('dashboard-gastos').textContent = gastos.toFixed(2);
-            // Gráfica
-            const ctx = document.getElementById('chartDashboard').getContext('2d');
-            new Chart(ctx, {
+            // Gráfica de distribución de gastos
+            const ctx1 = document.getElementById('chartDistribucion').getContext('2d');
+            if (chartDistribucion) chartDistribucion.destroy();
+            chartDistribucion = new Chart(ctx1, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(categorias),
@@ -306,6 +316,33 @@ function cargarDatosDashboard() {
                     }]
                 },
                 options: { plugins: { legend: { position: 'bottom' } } }
+            });
+            // Gráfica de evolución mensual
+            const ctx2 = document.getElementById('chartEvolucion').getContext('2d');
+            if (chartEvolucion) chartEvolucion.destroy();
+            const mesesLabels = Object.keys(meses).sort();
+            chartEvolucion = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: mesesLabels,
+                    datasets: [
+                        {
+                            label: 'Ingresos',
+                            data: mesesLabels.map(m => meses[m].ingresos),
+                            backgroundColor: '#10b981'
+                        },
+                        {
+                            label: 'Gastos',
+                            data: mesesLabels.map(m => meses[m].gastos),
+                            backgroundColor: '#ef4444'
+                        }
+                    ]
+                },
+                options: {
+                    plugins: { legend: { position: 'bottom' } },
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
             });
         });
     // Presupuesto
