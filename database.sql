@@ -1,5 +1,5 @@
 -- Base de datos para Gestor de Finanzas Personales
-CREATE DATABASE IF NOT EXISTS finanzas_personales;
+CREATE DATABASE IF NOT EXISTS finanzas_personales CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE finanzas_personales;
 
 -- Tabla 1: Usuarios
@@ -10,7 +10,7 @@ CREATE TABLE usuarios (
     password VARCHAR(255) NOT NULL,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     activo BOOLEAN DEFAULT TRUE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla 2: Categorías
 CREATE TABLE categorias (
@@ -21,7 +21,7 @@ CREATE TABLE categorias (
     color VARCHAR(7) DEFAULT '#007bff',
     usuario_id INT,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla 3: Cuentas Bancarias
 CREATE TABLE cuentas_bancarias (
@@ -34,7 +34,7 @@ CREATE TABLE cuentas_bancarias (
     activa BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla 4: Transacciones
 CREATE TABLE transacciones (
@@ -51,20 +51,20 @@ CREATE TABLE transacciones (
     FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL,
     FOREIGN KEY (cuenta_id) REFERENCES cuentas_bancarias(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla 5: Presupuestos
 CREATE TABLE presupuestos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     mes INT NOT NULL,
-    año INT NOT NULL,
+    ano INT NOT NULL,
     monto_total DECIMAL(10,2) NOT NULL,
     monto_gastado DECIMAL(10,2) DEFAULT 0.00,
     usuario_id INT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_presupuesto (usuario_id, mes, año)
-);
+    UNIQUE KEY unique_presupuesto (usuario_id, mes, ano)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla 6: Objetivos Financieros
 CREATE TABLE objetivos_financieros (
@@ -79,7 +79,7 @@ CREATE TABLE objetivos_financieros (
     activo BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla 7: Metas de Ahorro
 CREATE TABLE metas_ahorro (
@@ -94,17 +94,17 @@ CREATE TABLE metas_ahorro (
     completada BOOLEAN DEFAULT FALSE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Insertar categorías por defecto
 INSERT INTO categorias (nombre, tipo, icono, color) VALUES
 ('Salario', 'ingreso', 'fa-money-bill-wave', '#28a745'),
 ('Freelance', 'ingreso', 'fa-laptop-code', '#17a2b8'),
 ('Inversiones', 'ingreso', 'fa-chart-line', '#ffc107'),
-('Alimentación', 'gasto', 'fa-utensils', '#dc3545'),
+('Alimentacion', 'gasto', 'fa-utensils', '#dc3545'),
 ('Transporte', 'gasto', 'fa-car', '#6f42c1'),
 ('Vivienda', 'gasto', 'fa-home', '#fd7e14'),
 ('Entretenimiento', 'gasto', 'fa-gamepad', '#e83e8c'),
 ('Salud', 'gasto', 'fa-heartbeat', '#20c997'),
-('Educación', 'gasto', 'fa-graduation-cap', '#6c757d'),
+('Educacion', 'gasto', 'fa-graduation-cap', '#6c757d'),
 ('Otros', 'gasto', 'fa-tag', '#6c757d'); 
